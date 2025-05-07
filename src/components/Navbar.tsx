@@ -1,11 +1,15 @@
+'use client'; // Added at the top to make this a Client Component
+
 import Link from "next/link";
 import Menu from "./Menu";
 import Image from "next/image";
 import SearchBar from "./SearchBar";
 import dynamic from "next/dynamic";
-// import NavIcons from "./NavIcons";
 
-const NavIcons = dynamic(() => import("./NavIcons"), { ssr: false });
+const NavIcons = dynamic(() => import("./NavIcons"), { 
+  ssr: false,
+  loading: () => <div className="w-8 h-8" /> // Added loading placeholder
+});
 
 const Navbar = () => {
   return (
@@ -21,9 +25,11 @@ const Navbar = () => {
       <div className="hidden md:flex items-center justify-between gap-8 h-full">
         {/* LEFT */}
         <div className="w-1/3 xl:w-1/2 flex items-center gap-12">
-          <Link href="/" className="flex items-center gap-3">
-            <Image src="/logo.png" alt="" width={24} height={24} />
-            <div className="text-2xl tracking-wide">LAMA</div>
+          <Link href="/">
+            <div className="flex items-center gap-2">
+              <Image src="/logo.png" alt="LAMA Logo" width={24} height={24} />
+              <div className="text-2xl tracking-wide">LAMA</div>
+            </div>
           </Link>
           <div className="hidden xl:flex gap-4">
             <Link href="/">Homepage</Link>

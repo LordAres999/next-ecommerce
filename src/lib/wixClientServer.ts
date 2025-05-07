@@ -1,17 +1,11 @@
+// src/lib/wixClientServer.ts
 import { OAuthStrategy, createClient } from "@wix/sdk";
 import { collections, products } from "@wix/stores";
 import { orders } from "@wix/ecom";
-import { cookies } from "next/headers";
 import { members } from '@wix/members';
 
-export const wixClientServer = async () => {
-  let refreshToken;
-
-  try {
-    const cookieStore = cookies();
-    refreshToken = JSON.parse(cookieStore.get("refreshToken")?.value || "{}");
-  } catch (e) {}
-
+// Server-side only version
+export const wixClientServer = async (refreshToken?: string) => {
   const wixClient = createClient({
     modules: {
       products,
@@ -22,11 +16,27 @@ export const wixClientServer = async () => {
     auth: OAuthStrategy({
       clientId: process.env.NEXT_PUBLIC_WIX_CLIENT_ID!,
       tokens: {
-        refreshToken,
+        refreshToken: refreshToken ? JSON.parse(refreshToken) : undefined,
         accessToken: { value: "", expiresAt: 0 },
       },
     }),
   });
 
   return wixClient;
+};
+
+// Client-side compatible version (no cookie access)
+export const createWixClient = () => {
+  return createClient({
+    modules: {
+      products,
+      collections,
+      orders,
+      members,
+    },
+    auth: OAuthStrategy({
+      clientId: process.env.NEXT_PUBLIC_WIX_CLIENT_ID!,
+      // Tokens will need to be managed client-side
+    }),
+  });
 };
